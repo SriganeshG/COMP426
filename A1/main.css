@@ -1,0 +1,44 @@
+body{
+    background-color: #FFFFFF
+}
+
+h1{
+    font-family: Impact
+}
+
+ul{
+  font-family: Helvetica;
+    padding-left: 0;
+    margin: 0;
+}
+
+li{
+    font-family: Helvetica;
+         border-left: 5px solid #add8e6;
+    list-style-type: none;
+    padding-left: 0;
+    margin: 0;
+    
+}
+
+li:hover{
+    background: #add8e6
+}
+
+div{
+    
+}
+
+#slacks{
+    font-size: 100%;
+}
+p{
+    font-family: Helvetica;
+    text-indent:50px;
+}
+
+p > span{
+    font-size: 50%
+    
+}
+
