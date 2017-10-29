@@ -1,0 +1,38 @@
+.cards {
+    width: 100px;
+    height: auto;
+}
+
+#hand {
+    position: absolute;
+    top: 80%;
+    left: 50%;
+}
+
+#west {
+    position: absolute;
+    top: 50%;
+    left: 10%;
+    -ms-transform: rotate(-90deg);
+    /* IE 9 */
+    -webkit-transform: rotate(-90deg);
+    /* Chrome, Safari, Opera */
+    transform: rotate(-90deg);
+}
+
+#east {
+    position: absolute;
+    top: 50%;
+    left: 90%;
+    -ms-transform: rotate(90deg);
+    /* IE 9 */
+    -webkit-transform: rotate(90deg);
+    /* Chrome, Safari, Opera */
+    transform: rotate(90deg);
+}
+
+#north {
+    position: absolute;
+    top: 10%;
+    left: 50%;
+}
