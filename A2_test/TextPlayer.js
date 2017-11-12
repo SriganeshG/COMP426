@@ -1,89 +1,15 @@
-var HeartPlayer = function (name, ui_div, wrapper, scoreboard, console) {
+var TextPlayer = function (name, ui_div) {
 
     var match = null;
     var position = null;
     var current_game = null;
     var player_key = null;
-    var card_source = {
-        "Two of Clubs": "cardClubs2",
-        "Two of Diamonds": "cardDiamonds2",
-        "Two of Hearts": "cardHearts2",
-        "Two of Spades": "cardSpades2",
-        "Three of Clubs": "cardClubs3",
-        "Three of Diamonds": "cardDiamonds3",
-        "Three of Hearts": "cardHearts3",
-        "Three of Spades": "cardSpades3",
-        "Four of Clubs": "cardClubs4",
-        "Four of Diamonds": "cardDiamonds4",
-        "Four of Hearts": "cardHearts4",
-        "Four of Spades": "cardSpades4",
-        "Five of Clubs": "cardClubs5",
-        "Five of Diamonds": "cardDiamonds5",
-        "Five of Hearts": "cardHearts5",
-        "Five of Spades": "cardSpades5",
-        "Six of Clubs": "cardClubs6",
-        "Six of Diamonds": "cardDiamonds6",
-        "Six of Hearts": "cardHearts6",
-        "Six of Spades": "cardSpades6",
-        "Seven of Clubs": "cardClubs7",
-        "Seven of Diamonds": "cardDiamonds7",
-        "Seven of Hearts": "cardHearts7",
-        "Seven of Spades": "cardSpades7",
-        "Eight of Clubs": "cardClubs8",
-        "Eight of Diamonds": "cardDiamonds8",
-        "Eight of Hearts": "cardHearts8",
-        "Eight of Spades": "cardSpades8",
-        "Nine of Clubs": "cardClubs9",
-        "Nine of Diamonds": "cardDiamonds9",
-        "Nine of Hearts": "cardHearts9",
-        "Nine of Spades": "cardSpades9",
-        "Ten of Clubs": "cardClubs10",
-        "Ten of Diamonds": "cardDiamonds10",
-        "Ten of Hearts": "cardHearts10",
-        "Ten of Spades": "cardSpades10",
-        "Jack of Clubs": "cardClubsJ",
-        "Jack of Diamonds": "cardDiamondsJ",
-        "Jack of Hearts": "cardHeartsJ",
-        "Jack of Spades": "cardSpadesJ",
-        "Queen of Clubs": "cardClubsQ",
-        "Queen of Diamonds": "cardDiamondsQ",
-        "Queen of Hearts": "cardHeartsQ",
-        "Queen of Spades": "cardSpadesQ",
-        "King of Clubs": "cardClubsK",
-        "King of Hearts": "cardHeartsK",
-        "King of Diamonds": "cardDiamondsK",
-        "King of Spades": "cardSpadesK",
-        "Ace of Clubs": "cardClubsA",
-        "Ace of Diamonds": "cardDiamondsA",
-        "Ace of Hearts": "cardHeartsA",
-        "Ace of Spades": "cardSpadesA",
-    }
+
     var ui_message_log = $("<div class='text_player_message_log'></div>");
     var ui_input_form = $("<form class='text_player_input_form'><input type='text' class='text_player_input'></form>");
-    
-    var ui_show_dealt = $("<button id='show_dealt' type='button' class = 'test'>Show Dealt</button>");
-    var ui_username = $("<form id='console'>Enter name: <input type='text' name='name' value='ARTEEZY'></form>");
-    
-    
-    var ui_north_cards = $("<img id='north' class='cards' src='boardgamepack/PNG/Cards/cardSpadesA.png'>");
-    var ui_west_cards = $("<img id='west' class='cards' src='boardgamepack/PNG/Cards/cardBack_blue2.png'>");
-    var ui_east_cards = $("")
-    var ui_south_cards = $("")
-    $(wrapper).append();
-    
-    $(ui_div).append(ui_message_log).append(ui_input_form).append(ui_show_dealt);
-    $(console).append(ui_username);
-    document.getElementById('show_dealt').onclick=function(){
-        var dealt = current_game.getHand(player_key).getDealtCards(player_key);
-	    var dealt_message = $("<div class='text_player_message'>Dealt cards:</div>");
-	    var dealt_list = $("<ul></ul>");
-	    dealt.forEach(function (c) {
-		dealt_list.append($("<li>"+c.toString()+"</li>"));
-	    });
-	    dealt_message.append(dealt_list);
-	    message_log_append(dealt_message);
-    }
-    
+
+    $(ui_div).append(ui_message_log).append(ui_input_form);
+
     this.setupMatch = function (hearts_match, pos) {
 	match = hearts_match;
 	position = pos;
@@ -100,17 +26,8 @@ var HeartPlayer = function (name, ui_div, wrapper, scoreboard, console) {
 	game_of_hearts.registerEventHandler(Hearts.ALL_EVENTS, function (e) {
 	    message_log_append($("<div class='text_player_message'>"+e.toString()+"</div>"));
 	});
-        
-        
-        
     }
-    /*
-    for (i = 0; i < 13; i++) {
-        $("#north").append("<img id='image_"+i+"' src='boardgamepack/PNG/Cards/cardBack_red2.png'");
-        $("#east").append("<img id='image_"+i+"' src='boardgamepack/PNG/Cards/cardBack_green2.png'");  
-        $("#west").append("<img id='image_"+i+"' src='boardgamepack/PNG/Cards/cardBack_blue2.png'");     
-    }
-    */
+
     var message_log_append = function (msg) {
 	ui_message_log.append($(msg));
 	ui_message_log.scrollTop(ui_message_log.prop("scrollHeight")-ui_message_log.height());
