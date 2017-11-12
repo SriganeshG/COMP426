@@ -1,9 +1,10 @@
-$(docment).ready(function () {
+$(document).ready(function () {
+    var north = new HeartPlayer("Alice", $("#north_player")[0]);
+    var east = new DumbAI("Bob")
+    var south = new DumbAI("Carol");
+    var west = new DumbAI("David");
 
-    var south = new HeartPlayer("You")
-    var north = new DumbAI("Bob")
-    var east = new DumbAI("Barol")
-    var west = new DumbAI("Bavid")
     var match = new HeartsMatch(north, east, south, west);
+
     match.run();
-})
+});

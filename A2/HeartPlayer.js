@@ -80,7 +80,10 @@ var HeartPlayer = function (name, ui_div) {
 
         game_of_hearts.registerEventHandler(Hearts.ALL_EVENTS, function (e) {
             message_log_append($("<div class='text_player_message'>" + e.toString() + "</div>"));
+            alert(test);
         });
+
+
     }
 
     var message_log_append = function (msg) {
