@@ -221,10 +221,14 @@ var HeartPlayer = function (name, ui_div, wrapper, scoreboard, console, player_h
             //window.location.reload(false);
         });
     }
-    
-    var card_clear = function(e){
-        $("#wrapper").remove("#player_played");
-        $("#south").empty();
+
+    var card_clear = function (e) {
+
+        var ui_north_cards = $("<img id='player_played' class = 'cards' src='boardgamepack/PNG/Cards/cardBack.png'>");
+        var ui_west_cards = $("<img id='west' class='cards' src='boardgamepack/PNG/Cards/cardBack.png'>");
+        var ui_east_cards = $("<img id='east' class='cards' src='boardgamepack/PNG/Cards/cardBack.png'>");
+        var ui_south_cards = $("<img id='south' class='cards' src='boardgamepack/PNG/Cards/cardBack.png'>");
+        $("#wrapper").append(ui_north_cards).append(ui_west_cards).append(ui_east_cards).append(ui_south_cards);
         $("#west").empty();
         $("#east").empty();
     }
