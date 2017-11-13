@@ -65,13 +65,13 @@ var HeartPlayer = function (name, ui_div, wrapper, scoreboard, console, player_h
     var ui_show_dealt = $("<button id='show_dealt' type='button' class = 'test'>Start Game!</button>");
     var ui_pass = $("<button id='pass_button' type='button' class='test'>Pass 3</button>");
     var ui_play_card = $("<button id='play_button' type='button' class='test'>Play Card</button>");
+
     var ui_username = $("<form id='console' class='name_input'><input type='text' class='name_input' value='NAME HERE'></form>");
     var ui_scoreboard_north = $("<tr><td id='north_winner'>You!</td> <td id='player_score'>0</td><tr>");
     var ui_scoreboard_east = $("<tr><td id='east_winner'>East</td> <td id='east_score'>0</td><tr>");
     var ui_scoreboard_west = $("<tr><td id='west_winner'>West</td> <td id='west_score'>0</td><tr>");
     var ui_scoreboard_south = $("<tr><td id='south_winner'>South</td> <td id='south_score'>0</td><tr>");
 
-    $("#console").append(ui_username);
     $("#scoreboard").append(ui_scoreboard_north).append(ui_scoreboard_east).append(ui_scoreboard_south).append(ui_scoreboard_west);
 
     var ui_north_cards = $("<div id='player_played'></div>");
@@ -81,6 +81,7 @@ var HeartPlayer = function (name, ui_div, wrapper, scoreboard, console, player_h
     $("#wrapper").append(ui_north_cards).append(ui_west_cards).append(ui_east_cards).append(ui_south_cards);
 
     $(ui_div).append(ui_message_log).append(ui_input_form).append(ui_show_dealt).append(ui_pass).append(ui_play_card);
+    $(ui_play_card).hide();
     $("#console").append(ui_username);
 
     document.getElementById('show_dealt').onclick = function () {
@@ -125,7 +126,7 @@ var HeartPlayer = function (name, ui_div, wrapper, scoreboard, console, player_h
                 current_game.passCards(cardsPassed, player_key);
                 cardsPassed = [];
                 $("#pass_button").hide();
-                $("#play-card").show();
+                $(ui_play_card).show();
             }
         }
     }
@@ -222,7 +223,6 @@ var HeartPlayer = function (name, ui_div, wrapper, scoreboard, console, player_h
     }
 
     var card_played = function (e) {
-        
         if (e.getPosition == "North") {
             $('#player_hand').empty();
             $('#player_hand').append("<th><img id='" + card_source[e.toString()] + "' class='cards' src='boardgamepack/PNG/Cards/" + card_source[e.toString()] + ".png'></th>");
