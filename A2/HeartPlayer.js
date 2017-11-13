@@ -204,7 +204,6 @@ var HeartPlayer = function (name, ui_div, wrapper, scoreboard, console, player_h
         });
 
         game_of_hearts.registerEventHandler(Hearts.CARD_PLAYED_EVENT, function (e) {
-            window.console.log("tetst");
             card_played(e);
         });
 
@@ -223,7 +222,7 @@ var HeartPlayer = function (name, ui_div, wrapper, scoreboard, console, player_h
     }
 
     var card_played = function (e) {
-        window.console.log("alert");
+        
         if (e.getPosition == "North") {
             $('#player_hand').empty();
             $('#player_hand').append("<th><img id='" + card_source[e.toString()] + "' class='cards' src='boardgamepack/PNG/Cards/" + card_source[e.toString()] + ".png'></th>");
