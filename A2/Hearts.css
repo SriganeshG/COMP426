@@ -1,6 +1,13 @@
 .cards {
+    position: absolute;
+    float: left;
     width: 100px;
     height: auto;
+}
+
+#name {
+    position: absolute;
+    left: 47%;
 }
 
 #south {
@@ -31,9 +38,25 @@
     transform: rotate(90deg);
 }
 
+.selected {
+    border-style: solid;
+    border-color: green!important;
+}
+
+.playable {
+    border-style: solid!important;
+    border-color: blue;
+}
+
 #north {
     position: absolute;
     top: 10%;
+    left: 30%;
+}
+
+#player_played {
+    position: absolute;
+    top: 30%;
     left: 50%;
 }
 
@@ -51,7 +74,22 @@
 table,
 th,
 td {
-    border: 1px solid black;
+    border: 24px solid white;
+}
+
+table.score_update > * {
+    border: 10px solid white;
+}
+
+table.center {
+    display: -webkit-flex;
+    display: flex;
+    margin: auto;
+    width: auto;
+    padding: 5px;
+    min-height: 200px;
+    overflow: hidden;
+    background-color: white;
 }
 
 #player_div {
