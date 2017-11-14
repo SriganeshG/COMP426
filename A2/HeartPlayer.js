@@ -176,18 +176,7 @@ var HeartPlayer = function (name, ui_div, wrapper, scoreboard, console, player_h
         window.console.log(sb[Hearts.EAST]);
         window.console.log(sb[Hearts.WEST]);
         window.console.log(sb[Hearts.SOUTH]);
-        if ((north_score >= 100) || (east_score >= 100) || (south_score >= 100) || (west_score >= 100)) {
-            var score_array = [north_score, south_score, east_score, west_score];
-            var winner = score_array[0];
-            score_array.sort((a, b) => (a - b));
-            window.console.log(score_array);
 
-            $('pass_button').hide();
-            $('play_button').hide();
-            $('restart').show();
-            setTimeout(2000);
-            alert("The score of " + score_array[0] + " is the winner!");
-        }
         ui_username.on('submit', function (e) {
             e.preventDefault();
             var cmd = $(this).find('.name_input').val();
@@ -242,10 +231,34 @@ var HeartPlayer = function (name, ui_div, wrapper, scoreboard, console, player_h
 
         game_of_hearts.registerEventHandler(Hearts.GAME_OVER_EVENT, function (e) {
             card_clear(e);
+            update_scoreboard(e);
             //$(ui_reload_page).show();
             // $(ui_play_card).hide();
             $(".name_input").html(" ").css('background', 'rgba(50, 195, 50, 100)');
+            if ((north_score >= 100) || (east_score >= 100) || (south_score >= 100) || (west_score >= 100)) {
+                var score_array = [north_score, south_score, east_score, west_score];
+                var winner = score_array[0];
+                score_array.sort((a, b) => (a - b));
+                window.console.log(score_array);
 
+                $(ui_pass).hide();
+                $(ui_play_card).hide();
+                $(ui_reload_page).show();
+                setTimeout(2000);
+                if (sb[Hearts.NORTH] == score_array[0]) {
+                    window.console.log("You win!");
+                    alert("North is the winner!");
+                } else if (sb[Hearts.EAST] == score_array[0]) {
+                    window.console.log("East wins!");
+                    alert("East is the winner!");
+                } else if (sb[Hearts.WEST] == score_array[0]) {
+                    window.console.log("West wins!");
+                    alert("West is the winner!");
+                } else if (sb[Hearts.SOUTH] == score_array[0]) {
+                    window.console.log("South wins!");
+                    alert("South is the winner!");
+                }
+            }
         });
     }
 
@@ -255,10 +268,10 @@ var HeartPlayer = function (name, ui_div, wrapper, scoreboard, console, player_h
         $("#east_winner").css('border-color', 'rgba(1,1,1,0)');
         $("#west_winner").css('border-color', 'rgba(1,1,1,0)');
         var sb = match.getScoreboard();
-        north_score = north_score + sb[Hearts.NORTH];
-        south_score = south_score + sb[Hearts.SOUTH];
-        east_score = east_score + sb[Hearts.EAST];
-        west_score = west_score + sb[Hearts.WEST];
+        north_score = sb[Hearts.NORTH];
+        south_score = sb[Hearts.SOUTH];
+        east_score = sb[Hearts.EAST];
+        west_score = sb[Hearts.WEST];
 
         $("#player_score").html(north_score);
         $("#east_score").html(east_score);
@@ -268,7 +281,6 @@ var HeartPlayer = function (name, ui_div, wrapper, scoreboard, console, player_h
     }
 
     var card_clear = function (e) {
-
         var ui_north_cards = $("<img id='player_played' class = 'cards' src='boardgamepack/PNG/Cards/cardBack.png'>");
         var ui_west_cards = $("<img id='west' class='cards' src='boardgamepack/PNG/Cards/cardBack.png'>");
         var ui_east_cards = $("<img id='east' class='cards' src='boardgamepack/PNG/Cards/cardBack.png'>");

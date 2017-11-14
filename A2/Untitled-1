@@ -1,4 +1,11 @@
- var card_source = {
+var HeartPlayer = function (name, ui_div, wrapper, scoreboard, console, player_hand, name, north, south, east, west) {
+
+    var match = null;
+    var position = null;
+    var current_game = null;
+    var player_key = null;
+
+    var card_source = {
         "Two of Clubs": "cardClubs2",
         "Two of Diamonds": "cardDiamonds2",
         "Two of Hearts": "cardHearts2",
@@ -52,3 +59,415 @@
         "Ace of Hearts": "cardHeartsA",
         "Ace of Spades": "cardSpadesA",
     }
+    var ui_message_log = $("<div class='text_player_message_log'></div>");
+    var ui_input_form = $("<form class='text_player_input_form'><input type='text' class='text_player_input'></form>");
+
+    //var ui_show_dealt = $("<button id='show_dealt' type='button' class = 'test'>Start Game!</button>");
+    var ui_pass = $("<button id='pass_button' type='button' class='test'>Pass 3</button>");
+    var ui_play_card = $("<button id='play_button' type='button' class='test'>Play Card</button>");
+    var ui_reload_page = $("<button id='restart' type='button' class='test'>New Game!</button>");
+
+    var ui_username = $("<form id='console' class='name_input'><input type='text' class='name_input' value='NAME HERE'></form>");
+    var ui_scoreboard_north = $("<tr><td class='scorecard' id='north_winner'>You!</td> <td id='player_score'>0</td><tr>");
+    var ui_scoreboard_east = $("<tr><td class='scorecard' id='east_winner'>East</td> <td id='east_score'>0</td><tr>");
+    var ui_scoreboard_west = $("<tr><td class='scorecard' id='west_winner'>West</td> <td id='west_score'>0</td><tr>");
+    var ui_scoreboard_south = $("<tr><td class='scorecard' id='south_winner'>South</td> <td id='south_score'>0</td><tr>");
+
+    $("#scoreboard").append(ui_scoreboard_north).append(ui_scoreboard_east).append(ui_scoreboard_south).append(ui_scoreboard_west);
+
+    var ui_north_cards = $("<img id='player_played' class = 'cards' src='boardgamepack/PNG/Cards/cardBack.png'>");
+    var ui_west_cards = $("<img id='west' class='cards' src='boardgamepack/PNG/Cards/cardBack.png'>");
+    var ui_east_cards = $("<img id='east' class='cards' src='boardgamepack/PNG/Cards/cardBack.png'>");
+    var ui_south_cards = $("<img id='south' class='cards' src='boardgamepack/PNG/Cards/cardBack.png'>");
+    $("#wrapper").append(ui_north_cards).append(ui_west_cards).append(ui_east_cards).append(ui_south_cards);
+
+    $(ui_div).append(ui_message_log).append(ui_input_form).append(ui_pass).append(ui_play_card).append(ui_reload_page);
+    //$(ui_play_card).hide();
+    $(ui_reload_page).hide();
+    $("#console").append(ui_username);
+    /*
+        document.getElementById('show_dealt').onclick = function () {
+            var dealt = current_game.getHand(player_key).getDealtCards(player_key);
+            var dealt_message = $("<div class='text_player_message'>Dealt cards:</div>");
+            var dealt_list = $("<ul></ul>");
+            $("#player_hand").empty();
+            dealt.forEach(function (c) {
+                dealt_list.append($("<li>" + c.toString() + "</li>"));
+            });
+            firstHand();
+            dealt_message.append(dealt_list);
+            message_log_append(dealt_message);
+            $(this).hide();
+            $(ui_pass).show();
+        }
+        */
+
+    document.getElementById('restart').onclick = function () {
+        location.reload(true);
+    }
+
+    document.getElementById('pass_button').onclick = function () {
+        var cardsPassed = [];
+        var selected = [];
+
+        var currentHand = current_game.getHand(player_key).getUnplayedCards(player_key);
+
+        var currentHandString = currentHand.map(c => c.toString());
+
+        Array.from($(".selected")).forEach(c => selected.push(c.id));
+
+        for (var i = 0; i < currentHand.length; i++) {
+            for (var j = 0; j < selected.length; j++) {
+                if (card_source[currentHandString[i]] === selected[j]) {
+                    cardsPassed.push(currentHand[i]);
+                }
+            }
+        }
+
+        if (current_game.getStatus() === Hearts.PASSING) {
+            if (!current_game.passCards(cardsPassed, player_key)) {
+                alert("Please choose 3 cards to pass!");
+                cardPassing();
+            } else {
+                $("#player").find((".selected")).removeClass("selected");
+                current_game.passCards(cardsPassed, player_key);
+                cardsPassed = [];
+                //$("#pass_button").hide();
+                //$(ui_play_card).show();
+            }
+        }
+    }
+
+    document.getElementById('play_button').onclick = function () {
+        var playableCards = current_game.getHand(player_key).getPlayableCards(player_key);
+        // playableCards = playableCards.map(c => c.toString())
+
+        var cardSelectedToPlay = $("#player_hand").find(".selected").attr("id"); // grab name of png
+
+        var cardToPlay = playableCards.filter(function (c) {
+            return cardSelectedToPlay === card_source[c.toString()];
+        })
+
+        if (!current_game.playCard(cardToPlay[0], player_key)) {
+            alert("Please select one card to play!");
+        } else {
+            current_game.playCard(cardToPlay[0], player_key);
+        }
+    }
+
+    this.setupMatch = function (hearts_match, pos) {
+        match = hearts_match;
+        position = pos;
+    }
+
+    this.getName = function () {
+        return name;
+    }
+
+    this.setupNextGame = function (game_of_hearts, pkey) {
+        window.console.log("New round!");
+
+        update_scoreboard();
+        var sb = match.getScoreboard();
+        window.console.log(sb[Hearts.NORTH]);
+        window.console.log(sb[Hearts.EAST]);
+        window.console.log(sb[Hearts.SOUTH]);
+        window.console.log(sb[Hearts.WEST]);
+        /*
+        if ((sb[Hearts.NORTH] >= 100) || (sb[Hearts.EAST] >= 100) || (sb[Hearts.SOUTH] >= 100) || (sb[Hearts.WEST] >= 100)) {
+            var sb = match.getScoreboard();
+            var score_array = [sb[Hearts.NORTH], sb[Hearts.EAST], sb[Hearts.WEST], sb[Hearts.SOUTH]];
+            score_array.sort((a, b) => (a - b));
+            window.console.log(score_array);
+            $(ui_reload_page).show();
+            $(ui_play_card).hide();
+            $(ui_pass).hide();
+
+            if (sb[Hearts.NORTH] == score_array[0]) {
+                window.console.log("North wins");
+                alert("North is the winner!");
+            } else if (sb[Hearts.EAST] == score_array[0]) {
+                window.console.log("East wins");
+                alert("East is the winner!");
+            } else if (sb[Hearts.WEST] == score_array[0]) {
+                window.console.log("West wins");
+                alert("West is the winner!");
+            } else if (sb[Hearts.SOUTH] == score_array[0]) {
+                window.console.log("South wins");
+                alert("South is the winner!");
+            }
+
+        }
+*/
+        ui_username.on('submit', function (e) {
+            e.preventDefault();
+            var cmd = $(this).find('.name_input').val();
+            $("#name").html(cmd);
+            //$(players_name).html(cmd);
+            $(this).find('.name_input').val("").hide();
+        });
+        current_game = game_of_hearts;
+        player_key = pkey;
+        $("#north_winner") //.css('border-color', 'rgba(1,1,1,0)');
+        $("#south_winner") //.css('border-color', 'white');
+        $("#east_winner") //.css('border-color', 'white');
+        $("#west_winner") //.css('border-color', 'white');
+
+        game_of_hearts.registerEventHandler(Hearts.ALL_EVENTS, function (e) {
+            message_log_append($("<div class='text_player_message'>" + e.toString() + "</div>"));
+            //refreshHand();
+        });
+
+        game_of_hearts.registerEventHandler(Hearts.TRICK_START_EVENT, function (e) {
+            refreshHand();
+            showPlayable();
+            userTurnStart(e);
+            card_clear(e);
+        });
+
+        game_of_hearts.registerEventHandler(Hearts.GAME_STARTED_EVENT, function (e) {
+            firstHand();
+            cardPassing();
+            //$(ui_pass).hide();
+        });
+
+        game_of_hearts.registerEventHandler(Hearts.TRICK_CONTINUE_EVENT, function (e) {
+            userTurnContinue(e);
+            if (e.getNextPos() === position) {
+                refreshHand();
+                showPlayable();
+            }
+        });
+
+        game_of_hearts.registerEventHandler(Hearts.CARD_PLAYED_EVENT, function (e) {
+            card_played(e);
+        });
+
+        game_of_hearts.registerEventHandler(Hearts.PASSING_COMPLETE_EVENT, function (e) {
+            refreshHand();
+        });
+
+        game_of_hearts.registerEventHandler(Hearts.TRICK_COMPLETE_EVENT, function (e) {
+            trickWinner(e);
+        });
+
+        game_of_hearts.registerEventHandler(Hearts.GAME_OVER_EVENT, function (e) {
+            card_clear(e);
+            //$(ui_play_card).hide();
+            $(".name_input").html(" ").css('background', 'rgba(50, 195, 50, 100)');
+
+        });
+    }
+
+    var update_scoreboard = function (e) {
+        $("#north_winner").css('border-color', 'rgba(1,1,1,0)');
+        $("#south_winner").css('border-color', 'rgba(1,1,1,0)');
+        $("#east_winner").css('border-color', 'rgba(1,1,1,0)');
+        $("#west_winner").css('border-color', 'rgba(1,1,1,0)');
+        var sb = match.getScoreboard();
+        /*
+        north_score += sb[Hearts.NORTH];
+        south_score += sb[Hearts.SOUTH];
+        east_score += sb[Hearts.EAST];
+        west_score += sb[Hearts.WEST];
+        */
+        $("#player_score").html(sb[Hearts.NORTH]);
+        $("#east_score").html(sb[Hearts.EAST]);
+        $("#south_score").html(sb[Hearts.SOUTH]);
+        $("#west_score").html(sb[Hearts.WEST]);
+        //alert(sb[Hearts.NORTH]);
+    }
+
+    var card_clear = function (e) {
+        var ui_north_cards = $("<img id='player_played' class = 'cards' src='boardgamepack/PNG/Cards/cardBack.png'>");
+        var ui_west_cards = $("<img id='west' class='cards' src='boardgamepack/PNG/Cards/cardBack.png'>");
+        var ui_east_cards = $("<img id='east' class='cards' src='boardgamepack/PNG/Cards/cardBack.png'>");
+        var ui_south_cards = $("<img id='south' class='cards' src='boardgamepack/PNG/Cards/cardBack.png'>");
+        $("#wrapper").append(ui_north_cards).append(ui_west_cards).append(ui_east_cards).append(ui_south_cards);
+        $("#west").empty();
+        $("#east").empty();
+    }
+
+    var card_played = function (e) {
+        if (e.getPosition() == "North") {
+            $("#player_played").empty();
+            $("#wrapper").append("<img id='player_played' class='cards' src='boardgamepack/PNG/Cards/" + card_source[e.getCard().toString()] + ".png'>");
+        } else if (e.getPosition() == "South") {
+            $("#south").empty();
+            $("#wrapper").append("<img id='south' class='cards' src='boardgamepack/PNG/Cards/" + card_source[e.getCard().toString()] + ".png'>");
+        } else if (e.getPosition() == "West") {
+            $('#west').empty();
+            $('#west').append("<img id='player_played' class='cards' src='boardgamepack/PNG/Cards/" + card_source[e.getCard().toString()] + ".png'>");
+        } else if (e.getPosition() == "East") {
+            $('#east').empty();
+            $('#east').append("<img id='player_played' class='cards' src='boardgamepack/PNG/Cards/" + card_source[e.getCard().toString()] + ".png'>");
+        }
+    }
+
+    var userTurnStart = function (e) {
+        if (e.getStartPos() == "North") {
+            $(".name_input").html("Your turn!").css('background', 'yellow');
+        } else {
+            $(".name_input").html(" ").css('background', 'rgba(50, 195, 50, 100)');
+        }
+    }
+
+    var userTurnContinue = function (e) {
+        if (e.getNextPos() == "North") {
+            $(".name_input").html("Your turn!").css('background', 'yellow');
+        } else {
+            $(".name_input").html(" ").css('background', 'rgba(50, 195, 50, 100)');
+        }
+    }
+
+    var trickWinner = function (e) {
+        $("#north_winner").css('border-color', 'rgba(1,1,1,0)');
+        $("#south_winner").css('border-color', 'rgba(1,1,1,0)');
+        $("#east_winner").css('border-color', 'rgba(1,1,1,0)');
+        $("#west_winner").css('border-color', 'rgba(1,1,1,0)');
+        if (e.getTrick().getWinner() == "North") {
+            $("#north_winner").css('border-color', 'black');
+        }
+        if (e.getTrick().getWinner() == "South") {
+            $("#south_winner").css('border-color', 'black');
+        }
+        if (e.getTrick().getWinner() == "East") {
+            $("#east_winner").css('border-color', 'black');
+        }
+        if (e.getTrick().getWinner() == "West") {
+            $("#west_winner").css('border-color', 'black');
+        }
+
+    }
+
+    var firstHand = function (e) {
+        $("#player_hand").empty();
+        var current_hand = current_game.getHand(player_key).getUnplayedCards(player_key);
+        current_hand.forEach(function (c) {
+            $("#player_hand").append("<th><img id='" + card_source[c.toString()] + "' class='cards' src='boardgamepack/PNG/Cards/" + card_source[c.toString()] + ".png'></th>");
+        });
+
+        if (current_game.getStatus() === Hearts.PASSING) {
+            $(".cards").on('click', cardPassing);
+            cardsPassed = [];
+            $("button#show-dealt").hide();
+        }
+
+    }
+
+    var refreshHand = function (e) {
+        $("#player_hand").empty();
+        var current_hand = current_game.getHand(player_key).getUnplayedCards(player_key);
+        current_hand.forEach(function (c) {
+            $("#player_hand").append("<th><img id='" + card_source[c.toString()] + "' class='cards' src='boardgamepack/PNG/Cards/" + card_source[c.toString()] + ".png'></th>");
+        });
+    }
+
+    var showPlayable = function () {
+        if (current_game.getStatus() === Hearts.TRICK_IN_PROGRESS) {
+            var playableCards = current_game.getHand(player_key).getPlayableCards(player_key);
+            //playableCards = playableCards.map(c => c.toString());
+            playableCards.forEach(function (c) {
+                //  var cardPng = "boardgamepack/PNG/Cards/" + card_source[c] + ".png"
+                //window.console.log(cardPng);
+                $('#player_hand').find("#" + card_source[c] + "").addClass("playable").on("click", function () {
+                    if ($(".selected").length === 1) {
+                        if ($(this).hasClass("selected")) { // unselect
+                            $(this).toggleClass("selected")
+                        } else {
+                            $(".selected").first().toggleClass("selected")
+                            $(this).toggleClass("selected")
+                        }
+                    } else {
+                        $(this).toggleClass("selected")
+                    }
+                });
+            });
+        }
+    }
+
+    var cardPassing = function (e) {
+        if ($(".selected").length === 3) {
+            if ($(this).hasClass("selected")) { // unselect
+                $(this).toggleClass("selected");
+            } else {
+                $(".selected").first().toggleClass("selected");
+                $(this).toggleClass("selected");
+            }
+        } else {
+            $(this).toggleClass("selected");
+        }
+    }
+
+    var message_log_append = function (msg) {
+        ui_message_log.append($(msg));
+        ui_message_log.scrollTop(ui_message_log.prop("scrollHeight") - ui_message_log.height());
+    }
+
+    ui_input_form.on('submit', function (e) {
+        e.preventDefault();
+        var cmd = $(this).find('.text_player_input').val().split(" ");
+        action = cmd[0];
+        if (action == "pass") {
+            var cards = [new Card(Card.parseRank(cmd[1]), Card.parseSuit(cmd[2])),
+			 new Card(Card.parseRank(cmd[3]), Card.parseSuit(cmd[4])),
+			 new Card(Card.parseRank(cmd[5]), Card.parseSuit(cmd[6]))];
+            if (!current_game.passCards(cards, player_key)) {
+                message_log_append($("<div class='text_player_message error'>Card pass failed!</div>"));
+            } else {
+                message_log_append($("<div class='text_player_message'>Cards passed. Waiting for first trick to start.</div>"));
+            }
+        } else if (action == "showPlayable") {
+            var playable = current_game.getHand(player_key).getPlayableCards(player_key);
+            var playable_message = $("<div class='text_player_message'>Playable cards:</div>");
+            var playable_list = $("<ul></ul>");
+            playable.forEach(function (c) {
+                playable_list.append($("<li>" + c.toString() + "</li>"));
+            });
+            playable_message.append(playable_list);
+            message_log_append(playable_message);
+        } else if (action == "showDealt") {
+            var dealt = current_game.getHand(player_key).getDealtCards(player_key);
+            var dealt_message = $("<div class='text_player_message'>Dealt cards:</div>");
+            var dealt_list = $("<ul></ul>");
+            dealt.forEach(function (c) {
+                dealt_list.append($("<li>" + c.toString() + "</li>"));
+            });
+            dealt_message.append(dealt_list);
+            message_log_append(dealt_message);
+        } else if (action == "play") {
+            var card_to_play = new Card(Card.parseRank(cmd[1]), Card.parseSuit(cmd[2]));
+            if (!current_game.playCard(card_to_play, player_key)) {
+                message_log_append($("<div class='text_player_message error'>Attempt to play " +
+                    card_to_play.toString() + " failed!</div>"));
+            }
+        } else if (action == "autoplay") {
+            var autoplay_handler = function (e) {
+                if (current_game.getNextToPlay() == position) {
+                    current_game.playCard(current_game.getHand(player_key).getPlayableCards(player_key)[0],
+                        player_key);
+                }
+            }
+
+            current_game.registerEventHandler(Hearts.TRICK_START_EVENT, autoplay_handler);
+            current_game.registerEventHandler(Hearts.TRICK_CONTINUE_EVENT, autoplay_handler);
+            autoplay_handler();
+        } else if (action == "scoreboard") {
+            var sb = match.getScoreboard();
+            message_log_append($("<div class='text_player_message'>Scoreboard:<ul>" +
+                "<li>" + match.getPlayerName(Hearts.NORTH) + ": " +
+                sb[Hearts.NORTH] + "</li>" +
+                "<li>" + match.getPlayerName(Hearts.EAST) + ": " +
+                sb[Hearts.EAST] + "</li>" +
+                "<li>" + match.getPlayerName(Hearts.SOUTH) + ": " +
+                sb[Hearts.SOUTH] + "</li>" +
+                "<li>" + match.getPlayerName(Hearts.WEST) + ": " +
+                sb[Hearts.WEST] + "</li>" +
+                "</ul></div>"));
+        } else {
+            message_log_append($("<div class='text_player_message error'>Unknown action: " + action + "</div>"));
+        }
+        // Clear text input
+        $(this).find('.text_player_input').val("")
+    });
+}
