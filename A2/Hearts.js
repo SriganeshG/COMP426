@@ -203,7 +203,7 @@ var GameOfHearts = function (pass, options) {
                     var next_to_dispatch = (dispatch_queue.splice(0, 1))[0];
                     dispatchEvent(next_to_dispatch);
                 }
-            }, 500);
+            }, 10);
         }
     }
 
